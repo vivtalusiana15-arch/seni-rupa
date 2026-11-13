@@ -367,7 +367,7 @@ const app = {
         const kelasVal = document.getElementById('login-kelas').value;
         
         // LANGSUNG MASUK TANPA SYARAT
-        // Memaksa sistem untuk langsung mengenali user tanpa mempedulikan balasan backend
+        // Memaksa sistem untuk langsung mengenali user di layar (sementara memakai ID lokal)
         state.currentUser = {
             user_id: "u-" + Date.now(),
             nama: namaVal,
@@ -381,10 +381,19 @@ const app = {
                 method: 'POST',
                 body: JSON.stringify({ action: 'login', payload: { nama: namaVal, kelas: kelasVal } }),
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-            }).catch(err => console.log("Abaikan error backend lama: ", err));
+            })
+            .then(res => res.json())
+            .then(data => {
+                // SINKRONISASI DIAM-DIAM: 
+                // Jika nama berhasil disimpan/ditemukan di Sheet, ganti ID lokal dengan ID Asli dari Sheet
+                if (data.status === 'success' && data.user) {
+                    state.currentUser.user_id = data.user.user_id; 
+                }
+            })
+            .catch(err => console.log("Abaikan error backend: ", err));
         }
 
-        // Langsung perbarui Navigasi dan Masuk ke Dashboard (TANPA POPUP GAGAL/SUKSES)
+        // Langsung perbarui Navigasi dan Masuk ke Dashboard (TANPA MENUNGGU BALASAN DARI SHEET)
         ui.updateNav();
         this.navigate('student_dashboard');
     },
