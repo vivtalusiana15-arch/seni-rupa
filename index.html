@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruang Kreasi - Belajar dan Bermain</title>
+    <!-- Menambahkan foto profil sebagai ikon tab browser (Favicon) -->
+    <link rel="icon" href="https://drive.google.com/uc?export=view&id=18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -91,7 +93,7 @@ const MOCK_DB = {
             isi_materi: "Seni rupa adalah bagian dari kehidupan kita sehari-hari. Kita dapat menemukannya dalam bentuk benda-benda di sekitar kita. \n\n**Unsur Rupa:**\n1. Garis: Jejak yang ditinggalkan oleh alat.\n2. Bidang: Permukaan datar berbatas.\n3. Bentuk: Memiliki volume/isi (3D).\n4. Warna: Kesan cahaya yang dipantulkan.\n5. Tekstur: Kesan permukaan (kasar/halus).\n\n**Prinsip Desain:**\n1. Keseimbangan: Susunan visual agar tidak berat sebelah (Simetris, Asimetris, Radial).\n2. Penekanan: Bagian yang paling menarik perhatian.",
             contoh: "Daun memiliki tekstur, pelangi memiliki warna, dan bola memiliki bentuk.",
             aktivitas: "Amati benda di sekitarmu dan sebutkan unsur rupanya!",
-            gambar_url: "https://placehold.co/600x300/14b8a6/ffffff?text=Unsur+Seni+Rupa",
+            gambar_url: "https://drive.google.com/uc?export=view&id=18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X",
             urutan: 1, status: "publikasi"
         }
     ],
@@ -346,10 +348,13 @@ const app = {
                 const game = state.gameList.find(g => g.materi_id === materi.materi_id);
                 const gameInfo = game ? `<span class="text-xs font-bold bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"><i class="fa-solid fa-gamepad mr-1"></i> Ada Game!</span>` : '';
                 
+                // Gunakan foto profil sebagai fallback gambar materi
+                const imageSrc = materi.gambar_url ? materi.gambar_url : "https://drive.google.com/uc?export=view&id=18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X";
+
                 cardsHtml += `
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 border border-gray-100 flex flex-col">
-                        <div class="h-40 bg-teal-100 flex items-center justify-center relative overflow-hidden">
-                            ${materi.gambar_url ? `<img src="${materi.gambar_url}" alt="Cover" class="w-full h-full object-cover opacity-80 mix-blend-multiply">` : '<i class="fa-solid fa-image text-4xl text-teal-300"></i>'}
+                        <div class="h-40 bg-teal-100 flex items-center justify-center relative overflow-hidden p-4">
+                            <img src="${imageSrc}" alt="Cover" class="w-full h-full object-contain drop-shadow-md transition-transform hover:scale-110">
                             <div class="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-teal-700 shadow">${materi.bab}</div>
                         </div>
                         <div class="p-5 flex-grow flex flex-col">
