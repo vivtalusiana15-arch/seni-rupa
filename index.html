@@ -78,32 +78,64 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw7ylZVzLSQh6574VsmvTN3TIbnaaMol-bXoywBC4jFyxN8NnfvpdMxo4aoA45eYpcH/exec";
 
 // ==========================================
-// MOCK DATA (Digunakan jika GAS_URL kosong untuk keperluan Preview)
+// MOCK DATA (MATERI LENGKAP TERTANAM DI WEB)
 // ==========================================
 const MOCK_DB = {
     users: [
-        { user_id: "u1", nama: "Siswa Pandai", username: "siswa", password_hash: "123", role: "SISWA", kelas: "VI" },
-        { user_id: "u2", nama: "Bapak Guru", username: "guru", password_hash: "123", role: "GURU", kelas: "-" }
+        { user_id: "u1", nama: "Siswa", role: "SISWA", kelas: "VI" }
     ],
     materi: [
         { 
-            materi_id: "MAT-01", bab: "BAB 1", judul_materi: "Menemukan Keindahan di Sekitar Kita", 
-            subjudul: "Unsur Rupa dan Prinsip Desain", deskripsi: "Mari belajar tentang garis, bentuk, warna, dan keseimbangan!",
-            tujuan_pembelajaran: "Siswa dapat menganalisis hubungan antara unsur rupa dan prinsip desain.",
-            isi_materi: "Seni rupa adalah bagian dari kehidupan kita sehari-hari. Kita dapat menemukannya dalam bentuk benda-benda di sekitar kita. \n\n**Unsur Rupa:**\n1. Garis: Jejak yang ditinggalkan oleh alat.\n2. Bidang: Permukaan datar berbatas.\n3. Bentuk: Memiliki volume/isi (3D).\n4. Warna: Kesan cahaya yang dipantulkan.\n5. Tekstur: Kesan permukaan (kasar/halus).\n\n**Prinsip Desain:**\n1. Keseimbangan: Susunan visual agar tidak berat sebelah (Simetris, Asimetris, Radial).\n2. Penekanan: Bagian yang paling menarik perhatian.",
-            contoh: "Daun memiliki tekstur, pelangi memiliki warna, dan bola memiliki bentuk.",
-            aktivitas: "Amati benda di sekitarmu dan sebutkan unsur rupanya!",
+            materi_id: "MAT-01", bab: "BAB 1", judul_materi: "Mengenal Unsur dan Prinsip Seni Rupa", 
+            subjudul: "Dasar-dasar Keindahan Visual", deskripsi: "Mari belajar tentang garis, bentuk, warna, dan keseimbangan pada karya seni!",
+            tujuan_pembelajaran: "Siswa dapat memahami dan menganalisis unsur rupa serta prinsip desain di lingkungan sekitar.",
+            isi_materi: "Seni rupa adalah cabang seni yang membentuk karya seni dengan media yang bisa ditangkap mata dan dirasakan dengan rabaan. \n\n**1. Unsur-Unsur Seni Rupa:**\n- **Titik:** Unsur paling dasar.\n- **Garis:** Goresan atau batas limit dari suatu benda, ruang, bidang, warna, tekstur.\n- **Bidang:** Memiliki dimensi panjang dan lebar (2D).\n- **Bentuk:** Memiliki volume atau isi (3D).\n- **Warna:** Kesan yang ditimbulkan oleh pantulan cahaya.\n- **Tekstur:** Sifat permukaan sebuah benda (kasar, halus, licin).\n- **Gelap Terang:** Terjadi karena perbedaan intensitas cahaya.\n\n**2. Prinsip-Prinsip Seni Rupa:**\n- **Kesatuan (Unity):** Perpaduan unsur rupa yang saling bertautan.\n- **Keseimbangan (Balance):** Kesan kestabilan pada karya (simetris, asimetris, radial).\n- **Irama (Rhythm):** Pengulangan satu atau lebih unsur secara teratur.\n- **Komposisi:** Penempatan unsur seni rupa agar selaras.\n- **Proporsi:** Perbandingan ukuran yang ideal dan harmonis.",
+            contoh: "Lukisan pemandangan yang bagus menggunakan unsur warna, garis, dan prinsip keseimbangan.",
+            aktivitas: "Amati benda di sekitarmu dan catat unsur rupa apa saja yang membentuk benda tersebut!",
             gambar_url: "https://lh3.googleusercontent.com/d/18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X",
             urutan: 1, status: "publikasi"
+        },
+        { 
+            materi_id: "MAT-02", bab: "BAB 2", judul_materi: "Menggambar Ritme dalam Seni Rupa", 
+            subjudul: "Pola dan Pengulangan", deskripsi: "Mempelajari bagaimana pola dan pengulangan menciptakan ritme visual yang indah.",
+            tujuan_pembelajaran: "Siswa mampu membuat gambar dengan menerapkan prinsip ritme atau irama.",
+            isi_materi: "Ritme atau irama dalam seni rupa adalah pengulangan satu atau lebih unsur secara teratur dan terus menerus sehingga mempunyai kesan bergerak. \n\n**Jenis-jenis Ritme:**\n1. **Ritme Repetisi:** Pengulangan bentuk, warna, atau ukuran yang sama persis secara teratur.\n2. **Ritme Transisi:** Pengulangan unsur yang mengalami perubahan bertahap (misalnya dari kecil ke besar, atau dari warna terang ke gelap).\n3. **Ritme Oposisi:** Pengulangan unsur yang saling bertentangan namun tetap harmonis.\n\n**Cara Membuat Ritme:**\nKita bisa membuat ritme dengan menggambar bentuk dasar (seperti lingkaran atau segitiga) yang diulang-ulang pada sebuah bidang. Ritme sering kita temukan pada motif batik, anyaman, ukiran candi, atau pola pada pakaian.",
+            contoh: "Motif batik kawung merupakan contoh ritme repetisi yang sangat indah dari Nusantara.",
+            aktivitas: "Gambarlah pola pengulangan menggunakan bentuk segitiga dan lingkaran di buku gambarmu!",
+            gambar_url: "https://lh3.googleusercontent.com/d/18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X",
+            urutan: 2, status: "publikasi"
+        },
+        { 
+            materi_id: "MAT-03", bab: "BAB 3", judul_materi: "Mengenal dan Membuat Patung", 
+            subjudul: "Karya Seni Tiga Dimensi", deskripsi: "Menjelajahi dunia patung, mulai dari bahan, alat, hingga teknik pembuatannya.",
+            tujuan_pembelajaran: "Siswa dapat memahami teknik pembuatan patung dan mencoba membuatnya dari bahan lunak.",
+            isi_materi: "Patung adalah karya seni rupa tiga dimensi yang diciptakan dengan membentuk bahan bervolume.\n\n**Bahan Pembuatan Patung:**\n1. **Bahan Lunak:** Tanah liat, plastisin, sabun, lilin.\n2. **Bahan Keras:** Kayu, batu, logam.\n\n**Teknik Membuat Patung:**\n1. **Teknik Butsir:** Menambah dan mengurangi bahan lunak (seperti tanah liat) menggunakan tangan atau alat butsir.\n2. **Teknik Pahat:** Mengurangi bahan keras (kayu/batu) dengan alat pahat dan palu.\n3. **Teknik Cor:** Mencetak cairan (logam/semen) ke dalam sebuah cetakan.\n4. **Teknik Konstruksi:** Menyusun atau merakit bahan-bahan menjadi satu kesatuan utuh.\n\n**Fungsi Patung:**\nSebagai monumen (peringatan), hiasan (dekorasi ruangan/taman), religius (keagamaan), atau ekspresi seni murni.",
+            contoh: "Patung Garuda Wisnu Kencana di Bali adalah contoh patung monumen berskala besar.",
+            aktivitas: "Buatlah patung bentuk hewan sederhana menggunakan plastisin atau sabun mandi!",
+            gambar_url: "https://lh3.googleusercontent.com/d/18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X",
+            urutan: 3, status: "publikasi"
         }
     ],
     games: [
-        { game_id: "GAM-01", materi_id: "MAT-01", judul_game: "Petualangan Mengenal Seni Rupa", jenis_game: "Kuis Pilihan Ganda", petunjuk: "Jawablah pertanyaan berikut dengan tepat untuk mendapatkan bintang!", jumlah_soal: 5, batas_kelulusan: 60 }
+        { game_id: "GAM-01", materi_id: "MAT-01", judul_game: "Kuis Unsur & Prinsip Seni", jenis_game: "Kuis", petunjuk: "Jawablah untuk menguji ingatanmu!", jumlah_soal: 3, batas_kelulusan: 60 },
+        { game_id: "GAM-02", materi_id: "MAT-02", judul_game: "Tebak Irama Visual", jenis_game: "Kuis", petunjuk: "Pilih jawaban yang paling tepat tentang irama seni!", jumlah_soal: 3, batas_kelulusan: 60 },
+        { game_id: "GAM-03", materi_id: "MAT-03", judul_game: "Petualangan Seni Patung", jenis_game: "Kuis", petunjuk: "Buktikan wawasanmu tentang patung!", jumlah_soal: 3, batas_kelulusan: 60 }
     ],
     questions: [
-        { question_id: "q1", game_id: "GAM-01", pertanyaan: "Jika kamu melihat lukisan ombak di pantai yang meliuk-liuk, unsur rupa apakah yang paling dominan digunakan?", pilihan_a: "Warna", pilihan_b: "Tekstur", pilihan_c: "Garis", pilihan_d: "Bentuk", jawaban_benar: "C", pembahasan: "Garis meliuk-liuk dapat menciptakan kesan gerak pada ombak." },
-        { question_id: "q2", game_id: "GAM-01", pertanyaan: "Sebuah lukisan memiliki pohon besar di sisi kiri dan beberapa bunga kecil di sisi kanan agar tidak terasa berat sebelah. Prinsip apa ini?", pilihan_a: "Penekanan", pilihan_b: "Keseimbangan", pilihan_c: "Irama", pilihan_d: "Kontras", jawaban_benar: "B", pembahasan: "Keseimbangan asimetris menempatkan objek besar dan kecil agar visual tetap stabil." },
-        { question_id: "q3", game_id: "GAM-01", pertanyaan: "Kesan permukaan benda yang dapat dirasakan seperti kasar atau halus disebut...", pilihan_a: "Bentuk", pilihan_b: "Tekstur", pilihan_c: "Bidang", pilihan_d: "Garis", jawaban_benar: "B", pembahasan: "Tekstur adalah nilai raba dari suatu permukaan." }
+        // Soal Bab 1
+        { question_id: "q1", game_id: "GAM-01", pertanyaan: "Unsur seni rupa 2 dimensi yang hanya memiliki panjang dan lebar disebut...", pilihan_a: "Garis", pilihan_b: "Titik", pilihan_c: "Bidang", pilihan_d: "Bentuk", jawaban_benar: "C", pembahasan: "Bidang adalah area yang dibatasi oleh garis yang memiliki panjang dan lebar (2D)." },
+        { question_id: "q2", game_id: "GAM-01", pertanyaan: "Prinsip desain yang mengatur perbandingan ukuran yang ideal disebut...", pilihan_a: "Keseimbangan", pilihan_b: "Proporsi", pilihan_c: "Irama", pilihan_d: "Kesatuan", jawaban_benar: "B", pembahasan: "Proporsi adalah kesebandingan bentuk dan ukuran antar elemen agar tampak wajar." },
+        { question_id: "q3", game_id: "GAM-01", pertanyaan: "Kesan permukaan kasar atau halus pada suatu benda ketika diraba disebut...", pilihan_a: "Tekstur", pilihan_b: "Warna", pilihan_c: "Bidang", pilihan_d: "Gelap Terang", jawaban_benar: "A", pembahasan: "Tekstur adalah nilai raba dari suatu permukaan, bisa nyata atau semu." },
+        
+        // Soal Bab 2
+        { question_id: "q4", game_id: "GAM-02", pertanyaan: "Pengulangan unsur yang sama persis secara teratur disebut ritme...", pilihan_a: "Transisi", pilihan_b: "Oposisi", pilihan_c: "Repetisi", pilihan_d: "Komposisi", jawaban_benar: "C", pembahasan: "Repetisi berarti pengulangan yang sama/konsisten pada bentuk atau pola." },
+        { question_id: "q5", game_id: "GAM-02", pertanyaan: "Contoh nyata irama/ritme repetisi dapat kita temukan dengan mudah pada karya seni nusantara yaitu...", pilihan_a: "Patung Abstrak", pilihan_b: "Motif Batik", pilihan_c: "Lukisan Siluet", pilihan_d: "Kaligrafi", jawaban_benar: "B", pembahasan: "Batik menggunakan pola cap atau tulis yang terus diulang-ulang membentuk ritme visual." },
+        { question_id: "q6", game_id: "GAM-02", pertanyaan: "Menggambar bentuk dari ukuran kecil lalu membesar secara berurutan merupakan contoh ritme...", pilihan_a: "Repetisi", pilihan_b: "Oposisi", pilihan_c: "Transisi", pilihan_d: "Kesatuan", jawaban_benar: "C", pembahasan: "Ritme transisi melibatkan gradasi perubahan secara bertahap, misalnya dari kecil ke besar." },
+        
+        // Soal Bab 3
+        { question_id: "q7", game_id: "GAM-03", pertanyaan: "Tanah liat, lilin, dan plastisin merupakan bahan pembuat patung yang tergolong bersifat...", pilihan_a: "Keras", pilihan_b: "Lunak", pilihan_c: "Cair", pilihan_d: "Padat", jawaban_benar: "B", pembahasan: "Bahan-bahan tersebut sangat mudah dibentuk dan ditekan, sehingga disebut bahan lunak." },
+        { question_id: "q8", game_id: "GAM-03", pertanyaan: "Jika kamu membuat patung dari bahan kayu atau batu, teknik yang paling tepat digunakan adalah...", pilihan_a: "Pahat", pilihan_b: "Cor", pilihan_c: "Butsir", pilihan_d: "Cetak", jawaban_benar: "A", pembahasan: "Teknik pahat digunakan untuk mengurangi bahan keras menggunakan palu dan alat pahat." },
+        { question_id: "q9", game_id: "GAM-03", pertanyaan: "Patung yang sengaja dibuat untuk mengenang jasa pahlawan atau peristiwa bersejarah disebut patung...", pilihan_a: "Dekorasi", pilihan_b: "Religius", pilihan_c: "Monumen", pilihan_d: "Mainan", jawaban_benar: "C", pembahasan: "Patung monumen memiliki fungsi sejarah dan peringatan." }
     ]
 };
 
@@ -146,6 +178,20 @@ const api = {
             
             const response = await fetch(url, options);
             const data = await response.json();
+
+            // INJEKSI MATERI OTOMATIS: 
+            // Jika Google Sheets berhasil diakses tetapi DATANYA KOSONG, web otomatis memasukkan materi lengkap yang ditanam.
+            if (action === "getMateri" && data.status === "success" && data.data.length === 0) {
+                return { status: "success", data: MOCK_DB.materi };
+            }
+            if (action === "getGames" && data.status === "success" && data.data.length === 0) {
+                return { status: "success", data: MOCK_DB.games };
+            }
+            if (action === "getQuestions" && data.status === "success" && data.data.length === 0) {
+                const qs = MOCK_DB.questions.filter(q => q.game_id === payload.game_id);
+                return { status: "success", data: qs };
+            }
+
             return data;
         } catch (error) {
             console.error("API Error:", error);
