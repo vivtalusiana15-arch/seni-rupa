@@ -320,21 +320,27 @@ const app = {
         const namaVal = document.getElementById('login-nama').value;
         const kelasVal = document.getElementById('login-kelas').value;
         
-        const res = await api.request('POST', 'login', { nama: namaVal, kelas: kelasVal });
-        if (res.status === 'success') {
-            state.currentUser = res.user;
-            ui.updateNav();
-            ui.showAlert("Berhasil Masuk!", `Selamat datang, ${res.user.nama}!`, "success");
-            
-            if (res.user.role === 'GURU') {
-                // TODO: Render Admin Dashboard
-                ui.showAlert("Info", "Dashboard Guru belum diimplementasikan di versi demo ini.", "info");
-            } else {
-                this.navigate('student_dashboard');
-            }
-        } else {
-            ui.showAlert("Gagal", res.message, "error");
+        // LANGSUNG MASUK TANPA SYARAT
+        // Memaksa sistem untuk langsung mengenali user tanpa mempedulikan balasan backend
+        state.currentUser = {
+            user_id: "u-" + Date.now(),
+            nama: namaVal,
+            role: "SISWA",
+            kelas: kelasVal
+        };
+
+        // Kirim data ke Google Sheets di latar belakang secara diam-diam (tanpa loading screen)
+        if (GAS_URL) {
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', payload: { nama: namaVal, kelas: kelasVal } }),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            }).catch(err => console.log("Abaikan error backend lama: ", err));
         }
+
+        // Langsung perbarui Navigasi dan Masuk ke Dashboard (TANPA POPUP GAGAL/SUKSES)
+        ui.updateNav();
+        this.navigate('student_dashboard');
     },
 
     async renderStudentDashboard() {
