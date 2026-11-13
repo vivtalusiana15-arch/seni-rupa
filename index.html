@@ -160,8 +160,14 @@ const api = {
     mockDelay: (cb) => new Promise(resolve => setTimeout(() => resolve(cb()), 500)),
     mockProcess(action, payload) {
         if (action === "login") {
-            const user = MOCK_DB.users.find(u => u.nama.toLowerCase() === payload.nama.toLowerCase() && u.kelas === payload.kelas);
-            return user ? { status: "success", user: user } : { status: "error", message: "Nama atau Kelas salah" };
+            // Langsung sukseskan login dengan data yang diinput tanpa validasi
+            const newUser = {
+                user_id: "u" + Math.floor(Math.random() * 1000),
+                nama: payload.nama,
+                role: "SISWA",
+                kelas: payload.kelas
+            };
+            return { status: "success", user: newUser };
         } else if (action === "getMateri") {
             return { status: "success", data: MOCK_DB.materi };
         } else if (action === "getGames") {
@@ -287,7 +293,6 @@ const app = {
                         <img src="https://lh3.googleusercontent.com/d/18xCXSw8sjHtQ7K_FpuEhzOBC1yTffD8X" alt="Login Icon" class="w-20 h-20 mx-auto mb-3 object-contain">
                         <h2 class="heading-font text-3xl text-gray-800">Masuk Akun</h2>
                         <p class="text-gray-500 text-sm mt-1">Siap untuk bertualang hari ini?</p>
-                        ${!GAS_URL ? '<p class="text-xs text-orange-500 mt-2 font-bold bg-orange-50 p-2 rounded">Mode Mocking Aktif. Gunakan Nama: Siswa Pandai / Kelas: VI</p>' : ''}
                     </div>
                     <form id="loginForm" onsubmit="app.handleLogin(event)" class="space-y-5">
                         <div>
@@ -296,10 +301,12 @@ const app = {
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Kelas</label>
-                            <input type="text" id="login-kelas" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50" placeholder="Contoh: VI">
+                            <select id="login-kelas" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50 cursor-pointer appearance-none">
+                                <option value="6" selected>Kelas 6 (VI)</option>
+                            </select>
                         </div>
                         <button type="submit" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-4">
-                            Masuk
+                            Mulai Belajar
                         </button>
                     </form>
                 </div>
