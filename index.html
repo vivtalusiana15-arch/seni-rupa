@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Kreasi - Belajar dan Bermain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdfa; color: #1e293b; }
+        .heading-font { font-family: 'Fredoka One', cursive; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .animate-bounce-slow { animation: bounce 3s infinite; }
+        .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Game Specific Styles */
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .correct-ans { background-color: #22c55e !important; color: white !important; border-color: #16a34a !important; }
+        .wrong-ans { background-color: #ef4444 !important; color: white !important; border-color: #dc2626 !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-teal-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="app.navigate('home')">
+                    <i class="fa-solid fa-palette text-2xl text-yellow-300"></i>
+                    <span class="heading-font text-2xl tracking-wide">Ruang Kreasi</span>
+                </div>
+                <div id="nav-actions" class="flex items-center space-x-4">
+                    <!-- Dinamis melalui JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app-container" class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+        <!-- Tampilan akan di-render di sini oleh JavaScript -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-teal-800 text-teal-100 py-6 text-center mt-auto">
+        <p class="heading-font text-lg">"Belajar Seni Rupa Jadi Lebih Seru, Kreatif, dan Menyenangkan!"</p>
+        <p class="text-sm mt-2 opacity-75">© 2026 Ruang Kreasi - Media Pembelajaran SD Kelas VI</p>
+    </footer>
+
+    <!-- Custom Modal / Message Box -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center z-[100] px-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full fade-in transform scale-100">
+            <div id="modal-icon" class="text-center mb-4 text-4xl"></div>
+            <h3 id="modal-title" class="text-xl font-bold text-center text-gray-800 mb-2"></h3>
+            <p id="modal-message" class="text-gray-600 text-center mb-6"></p>
+            <div class="flex justify-center">
+                <button onclick="ui.closeModal()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-full transition-colors">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-80 hidden flex-col items-center justify-center z-[200]">
+        <div class="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+        <p class="text-teal-700 font-semibold animate-pulse">Memuat data...</p>
+    </div>
+
+<script>
+/**
+ * KONFIGURASI FRONTEND
+ * URL Web App Google Apps Script telah terhubung!
+ */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw7ylZVzLSQh6574VsmvTN3TIbnaaMol-bXoywBC4jFyxN8NnfvpdMxo4aoA45eYpcH/exec";
+
+// ==========================================
+// MOCK DATA (Digunakan jika GAS_URL kosong untuk keperluan Preview)
+// ==========================================
+const MOCK_DB = {
+    users: [
+        { user_id: "u1", nama: "Siswa Pandai", username: "siswa", password_hash: "123", role: "SISWA", kelas: "VI" },
+        { user_id: "u2", nama: "Bapak Guru", username: "guru", password_hash: "123", role: "GURU", kelas: "-" }
+    ],
+    materi: [
+        { 
+            materi_id: "MAT-01", bab: "BAB 1", judul_materi: "Menemukan Keindahan di Sekitar Kita", 
+            subjudul: "Unsur Rupa dan Prinsip Desain", deskripsi: "Mari belajar tentang garis, bentuk, warna, dan keseimbangan!",
+            tujuan_pembelajaran: "Siswa dapat menganalisis hubungan antara unsur rupa dan prinsip desain.",
+            isi_materi: "Seni rupa adalah bagian dari kehidupan kita sehari-hari. Kita dapat menemukannya dalam bentuk benda-benda di sekitar kita. \n\n**Unsur Rupa:**\n1. Garis: Jejak yang ditinggalkan oleh alat.\n2. Bidang: Permukaan datar berbatas.\n3. Bentuk: Memiliki volume/isi (3D).\n4. Warna: Kesan cahaya yang dipantulkan.\n5. Tekstur: Kesan permukaan (kasar/halus).\n\n**Prinsip Desain:**\n1. Keseimbangan: Susunan visual agar tidak berat sebelah (Simetris, Asimetris, Radial).\n2. Penekanan: Bagian yang paling menarik perhatian.",
+            contoh: "Daun memiliki tekstur, pelangi memiliki warna, dan bola memiliki bentuk.",
+            aktivitas: "Amati benda di sekitarmu dan sebutkan unsur rupanya!",
+            gambar_url: "https://placehold.co/600x300/14b8a6/ffffff?text=Unsur+Seni+Rupa",
+            urutan: 1, status: "publikasi"
+        }
+    ],
+    games: [
+        { game_id: "GAM-01", materi_id: "MAT-01", judul_game: "Petualangan Mengenal Seni Rupa", jenis_game: "Kuis Pilihan Ganda", petunjuk: "Jawablah pertanyaan berikut dengan tepat untuk mendapatkan bintang!", jumlah_soal: 5, batas_kelulusan: 60 }
+    ],
+    questions: [
+        { question_id: "q1", game_id: "GAM-01", pertanyaan: "Jika kamu melihat lukisan ombak di pantai yang meliuk-liuk, unsur rupa apakah yang paling dominan digunakan?", pilihan_a: "Warna", pilihan_b: "Tekstur", pilihan_c: "Garis", pilihan_d: "Bentuk", jawaban_benar: "C", pembahasan: "Garis meliuk-liuk dapat menciptakan kesan gerak pada ombak." },
+        { question_id: "q2", game_id: "GAM-01", pertanyaan: "Sebuah lukisan memiliki pohon besar di sisi kiri dan beberapa bunga kecil di sisi kanan agar tidak terasa berat sebelah. Prinsip apa ini?", pilihan_a: "Penekanan", pilihan_b: "Keseimbangan", pilihan_c: "Irama", pilihan_d: "Kontras", jawaban_benar: "B", pembahasan: "Keseimbangan asimetris menempatkan objek besar dan kecil agar visual tetap stabil." },
+        { question_id: "q3", game_id: "GAM-01", pertanyaan: "Kesan permukaan benda yang dapat dirasakan seperti kasar atau halus disebut...", pilihan_a: "Bentuk", pilihan_b: "Tekstur", pilihan_c: "Bidang", pilihan_d: "Garis", jawaban_benar: "B", pembahasan: "Tekstur adalah nilai raba dari suatu permukaan." }
+    ]
+};
+
+// ==========================================
+// STATE MANAGEMENT
+// ==========================================
+const state = {
+    currentUser: null,
+    currentView: 'home',
+    materiList: [],
+    gameList: [],
+    activeMateri: null,
+    activeGame: null,
+    gameState: {
+        questions: [], currentIndex: 0, score: 0, correctCount: 0, wrongCount: 0, isFinished: false
+    }
+};
+
+// ==========================================
+// API LAYER (Komunikasi dengan GAS atau Mock)
+// ==========================================
+const api = {
+    async request(method, action, payload = null) {
+        ui.showLoading();
+        try {
+            if (!GAS_URL) {
+                // Mock Backend Mode
+                return await this.mockDelay(() => this.mockProcess(action, payload));
+            }
+            
+            // Real GAS Backend
+            let url = `${GAS_URL}?action=${action}`;
+            let options = { method: method };
+            
+            if (method === 'POST') {
+                url = GAS_URL;
+                options.body = JSON.stringify({ action: action, payload: payload });
+                options.headers = { 'Content-Type': 'text/plain;charset=utf-8' }; // Prevent preflight for simple requests
+            }
+            
+            const response = await fetch(url, options);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("API Error:", error);
+            ui.showAlert("Kesalahan Jaringan", "Tidak dapat terhubung ke server.", "error");
+            return { status: "error" };
+        } finally {
+            ui.hideLoading();
+        }
+    },
+    
+    // Mock processing functions
+    mockDelay: (cb) => new Promise(resolve => setTimeout(() => resolve(cb()), 500)),
+    mockProcess(action, payload) {
+        if (action === "login") {
+            const user = MOCK_DB.users.find(u => u.username === payload.username && u.password_hash === payload.password);
+            return user ? { status: "success", user: user } : { status: "error", message: "Username/Password salah" };
+        } else if (action === "getMateri") {
+            return { status: "success", data: MOCK_DB.materi };
+        } else if (action === "getGames") {
+            return { status: "success", data: MOCK_DB.games };
+        } else if (action === "getQuestions") {
+            const qs = MOCK_DB.questions.filter(q => q.game_id === payload.game_id);
+            return { status: "success", data: qs };
+        } else if (action === "saveResult") {
+            return { status: "success", message: "Disimpan secara lokal (Mock)" };
+        }
+        return { status: "error", message: "Aksi tidak dikenal" };
+    }
+};
+
+// ==========================================
+// UI CONTROLLER & ROUTING
+// ==========================================
+const ui = {
+    container: document.getElementById('app-container'),
+    navActions: document.getElementById('nav-actions'),
+    
+    showLoading() { document.getElementById('loading-overlay').classList.remove('hidden'); document.getElementById('loading-overlay').classList.add('flex'); },
+    hideLoading() { document.getElementById('loading-overlay').classList.add('hidden'); document.getElementById('loading-overlay').classList.remove('flex'); },
+    
+    showAlert(title, message, type = "info") {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-message').innerText = message;
+        const icon = document.getElementById('modal-icon');
+        icon.className = "text-4xl mb-4 " + (type === 'error' ? 'text-red-500 fa-solid fa-circle-xmark' : type === 'success' ? 'text-green-500 fa-solid fa-circle-check' : 'text-blue-500 fa-solid fa-circle-info');
+        document.getElementById('custom-modal').classList.remove('hidden');
+    },
+    closeModal() { document.getElementById('custom-modal').classList.add('hidden'); },
+
+    updateNav() {
+        if (state.currentUser) {
+            this.navActions.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="font-semibold text-teal-100"><i class="fa-solid fa-user-circle mr-1"></i> ${state.currentUser.nama}</span>
+                    <button onclick="app.logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-bold shadow transition">Keluar</button>
+                </div>
+            `;
+        } else {
+            this.navActions.innerHTML = `<button onclick="app.navigate('login')" class="bg-yellow-400 hover:bg-yellow-300 text-teal-900 px-4 py-2 rounded-full font-bold shadow-md transition transform hover:scale-105">Masuk / Login</button>`;
+        }
+    },
+
+    renderView(html) {
+        this.container.innerHTML = html;
+    }
+};
+
+// ==========================================
+// APPLICATION LOGIC
+// ==========================================
+const app = {
+    init() {
+        ui.updateNav();
+        this.navigate('home');
+    },
+    
+    async navigate(view, params = null) {
+        state.currentView = view;
+        
+        switch (view) {
+            case 'home': this.renderHome(); break;
+            case 'login': this.renderLogin(); break;
+            case 'student_dashboard': await this.renderStudentDashboard(); break;
+            case 'materi_detail': this.renderMateriDetail(params); break;
+            case 'game': await this.initGame(params); break;
+        }
+    },
+
+    logout() {
+        state.currentUser = null;
+        ui.updateNav();
+        this.navigate('home');
+    },
+
+    // --- VIEWS ---
+
+    renderHome() {
+        if (state.currentUser && state.currentUser.role === 'SISWA') {
+            return this.navigate('student_dashboard');
+        }
+        
+        const html = `
+            <div class="flex flex-col items-center justify-center text-center py-12 fade-in">
+                <div class="w-32 h-32 bg-teal-100 rounded-full flex items-center justify-center mb-6 shadow-inner relative overflow-hidden">
+                    <i class="fa-solid fa-palette text-6xl text-teal-500 animate-bounce-slow"></i>
+                    <div class="absolute bottom-0 w-full h-1/3 bg-teal-200 opacity-50 rounded-b-full"></div>
+                </div>
+                <h1 class="heading-font text-5xl md:text-6xl text-teal-700 mb-4 drop-shadow-sm">RUANG KREASI</h1>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-700 mb-6">Belajar dan Bermain Seni Rupa Kelas VI</h2>
+                <p class="text-gray-600 max-w-2xl mb-10 text-lg leading-relaxed">
+                    Selamat datang di dunia kreativitas! Di sini kamu bisa membaca materi pelajaran yang seru dan langsung menguji pengetahuanmu melalui game edukasi yang menantang.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-lg mb-10">
+                    <div class="glass-panel p-6 rounded-2xl text-center border-t-4 border-teal-400">
+                        <i class="fa-solid fa-book-open text-3xl text-teal-500 mb-3"></i>
+                        <h3 class="font-bold text-lg mb-1">Baca Materi</h3>
+                        <p class="text-sm text-gray-500">Materi ringkas & menarik</p>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl text-center border-t-4 border-yellow-400">
+                        <i class="fa-solid fa-gamepad text-3xl text-yellow-500 mb-3"></i>
+                        <h3 class="font-bold text-lg mb-1">Mainkan Game</h3>
+                        <p class="text-sm text-gray-500">Kuis interaktif seru</p>
+                    </div>
+                </div>
+                <button onclick="app.navigate('login')" class="bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 text-white text-xl font-bold py-4 px-10 rounded-full shadow-xl transform transition hover:-translate-y-1 hover:shadow-2xl">
+                    Mulai Belajar Sekarang <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        `;
+        ui.renderView(html);
+    },
+
+    renderLogin() {
+        const html = `
+            <div class="flex justify-center items-center py-10 fade-in">
+                <div class="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-gray-100">
+                    <div class="text-center mb-8">
+                        <i class="fa-solid fa-user-astronaut text-5xl text-teal-500 mb-3"></i>
+                        <h2 class="heading-font text-3xl text-gray-800">Masuk Akun</h2>
+                        <p class="text-gray-500 text-sm mt-1">Siap untuk bertualang hari ini?</p>
+                        ${!GAS_URL ? '<p class="text-xs text-orange-500 mt-2 font-bold bg-orange-50 p-2 rounded">Mode Mocking Aktif. Gunakan user: siswa / pass: 123</p>' : ''}
+                    </div>
+                    <form id="loginForm" onsubmit="app.handleLogin(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                            <input type="text" id="username" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" id="password" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50">
+                        </div>
+                        <button type="submit" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200 mt-4">
+                            Masuk
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        ui.renderView(html);
+    },
+
+    async handleLogin(e) {
+        e.preventDefault();
+        const userVal = document.getElementById('username').value;
+        const passVal = document.getElementById('password').value;
+        
+        const res = await api.request('POST', 'login', { username: userVal, password: passVal });
+        if (res.status === 'success') {
+            state.currentUser = res.user;
+            ui.updateNav();
+            ui.showAlert("Berhasil Masuk!", `Selamat datang, ${res.user.nama}!`, "success");
+            
+            if (res.user.role === 'GURU') {
+                // TODO: Render Admin Dashboard
+                ui.showAlert("Info", "Dashboard Guru belum diimplementasikan di versi demo ini.", "info");
+            } else {
+                this.navigate('student_dashboard');
+            }
+        } else {
+            ui.showAlert("Gagal", res.message, "error");
+        }
+    },
+
+    async renderStudentDashboard() {
+        if (!state.currentUser) return this.navigate('home');
+
+        // Fetch Data
+        const matRes = await api.request('GET', 'getMateri');
+        const gameRes = await api.request('GET', 'getGames');
+        
+        if (matRes.status === 'success') state.materiList = matRes.data.filter(m => m.status === 'publikasi').sort((a,b) => a.urutan - b.urutan);
+        if (gameRes.status === 'success') state.gameList = gameRes.data;
+
+        let cardsHtml = '';
+        if (state.materiList.length === 0) {
+            cardsHtml = `<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-xl shadow">Belum ada materi yang dipublikasikan.</div>`;
+        } else {
+            state.materiList.forEach(materi => {
+                const game = state.gameList.find(g => g.materi_id === materi.materi_id);
+                const gameInfo = game ? `<span class="text-xs font-bold bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"><i class="fa-solid fa-gamepad mr-1"></i> Ada Game!</span>` : '';
+                
+                cardsHtml += `
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 border border-gray-100 flex flex-col">
+                        <div class="h-40 bg-teal-100 flex items-center justify-center relative overflow-hidden">
+                            ${materi.gambar_url ? `<img src="${materi.gambar_url}" alt="Cover" class="w-full h-full object-cover opacity-80 mix-blend-multiply">` : '<i class="fa-solid fa-image text-4xl text-teal-300"></i>'}
+                            <div class="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-teal-700 shadow">${materi.bab}</div>
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col">
+                            <h3 class="font-bold text-lg text-gray-800 mb-1 leading-tight">${materi.judul_materi}</h3>
+                            <p class="text-xs text-teal-600 font-semibold mb-3">${materi.subjudul || ''}</p>
+                            <p class="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">${materi.deskripsi}</p>
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                                ${gameInfo}
+                                <button onclick="app.navigate('materi_detail', '${materi.materi_id}')" class="bg-teal-50 text-teal-600 hover:bg-teal-500 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition">Mulai Belajar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        const html = `
+            <div class="fade-in space-y-8">
+                <!-- Header Card -->
+                <div class="bg-gradient-to-r from-teal-500 to-emerald-500 rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h2 class="heading-font text-3xl mb-2">Halo, ${state.currentUser.nama}! 👋</h2>
+                        <p class="text-teal-50 font-medium">Pilih materi di bawah ini untuk mulai belajar dan mengumpulkan skor dari game!</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex gap-4">
+                        <div class="bg-white/20 backdrop-blur px-4 py-3 rounded-xl text-center">
+                            <div class="text-3xl font-bold">${state.materiList.length}</div>
+                            <div class="text-xs uppercase tracking-wider opacity-80">Materi</div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur px-4 py-3 rounded-xl text-center">
+                            <div class="text-3xl font-bold">${state.gameList.length}</div>
+                            <div class="text-xs uppercase tracking-wider opacity-80">Game</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materi Grid -->
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-teal-200 inline-block pb-2">Daftar Materi</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+        ui.renderView(html);
+    },
+
+    renderMateriDetail(materiId) {
+        const materi = state.materiList.find(m => m.materi_id === materiId);
+        if (!materi) return this.navigate('student_dashboard');
+        
+        state.activeMateri = materi;
+        const game = state.gameList.find(g => g.materi_id === materiId);
+        
+        // Parse simple markdown-like newlines for isi_materi
+        const formattedIsi = materi.isi_materi.replace(/\n\n/g, '</p><p class="mb-4">').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        const html = `
+            <div class="fade-in max-w-4xl mx-auto">
+                <button onclick="app.navigate('student_dashboard')" class="text-teal-600 font-semibold mb-6 hover:text-teal-800 transition flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Dashboard
+                </button>
+                
+                <article class="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+                    <!-- Header -->
+                    <div class="bg-teal-50 border-b border-teal-100 p-8 text-center">
+                        <span class="inline-block bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">${materi.bab}</span>
+                        <h1 class="heading-font text-3xl md:text-4xl text-gray-800 mb-2">${materi.judul_materi}</h1>
+                        <h2 class="text-lg text-teal-600 font-medium">${materi.subjudul || ''}</h2>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-8 md:p-10 space-y-8">
+                        
+                        ${materi.tujuan_pembelajaran ? `
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                            <h4 class="font-bold text-blue-800 mb-1 flex items-center"><i class="fa-solid fa-bullseye mr-2"></i> Tujuan Pembelajaran</h4>
+                            <p class="text-sm text-blue-900">${materi.tujuan_pembelajaran}</p>
+                        </div>` : ''}
+                        
+                        <div class="prose prose-teal max-w-none text-gray-700 leading-relaxed text-lg">
+                            <p class="mb-4">${formattedIsi}</p>
+                        </div>
+
+                        ${materi.contoh ? `
+                        <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-100">
+                            <h4 class="font-bold text-yellow-800 mb-2 flex items-center"><i class="fa-solid fa-lightbulb mr-2"></i> Contoh</h4>
+                            <p class="text-gray-700 italic">${materi.contoh}</p>
+                        </div>` : ''}
+
+                        ${materi.aktivitas ? `
+                        <div class="bg-green-50 p-6 rounded-2xl border border-green-100">
+                            <h4 class="font-bold text-green-800 mb-2 flex items-center"><i class="fa-solid fa-person-running mr-2"></i> Aktivitas</h4>
+                            <p class="text-gray-700">${materi.aktivitas}</p>
+                        </div>` : ''}
+
+                    </div>
+                    
+                    <!-- Footer Action -->
+                    <div class="bg-gray-50 p-8 border-t border-gray-100 text-center">
+                        ${game ? `
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Waktunya Bermain! 🎮</h3>
+                            <p class="text-gray-500 mb-6 text-sm max-w-md mx-auto">Uji pemahamanmu tentang materi ini dengan memainkan game: <strong>${game.judul_game}</strong></p>
+                            <button onclick="app.navigate('game', '${game.game_id}')" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 text-lg font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105">
+                                Mulai Game Sekarang <i class="fa-solid fa-play ml-2"></i>
+                            </button>
+                        ` : `
+                            <p class="text-gray-500 italic">Tidak ada game untuk materi ini.</p>
+                        `}
+                    </div>
+                </article>
+            </div>
+        `;
+        ui.renderView(html);
+    },
+
+    // --- GAME LOGIC ---
+
+    async initGame(gameId) {
+        const game = state.gameList.find(g => g.game_id === gameId);
+        if (!game) return this.navigate('student_dashboard');
+        
+        state.activeGame = game;
+        
+        // Fetch Questions
+        const qRes = await api.request('GET', 'getQuestions', { game_id: gameId });
+        if (qRes.status !== 'success' || !qRes.data || qRes.data.length === 0) {
+            ui.showAlert("Maaf", "Soal belum tersedia untuk game ini.", "error");
+            return this.navigate('materi_detail', game.materi_id);
+        }
+
+        // Reset state
+        state.gameState = {
+            questions: this.shuffleArray(qRes.data),
+            currentIndex: 0,
+            score: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            isFinished: false
+        };
+
+        this.renderGameLayout();
+    },
+
+    renderGameLayout() {
+        const game = state.activeGame;
+        const html = `
+            <div class="fade-in max-w-3xl mx-auto h-full flex flex-col justify-center">
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-teal-100">
+                    <!-- Game Header -->
+                    <div class="bg-teal-500 text-white p-6 text-center relative">
+                        <button onclick="app.navigate('materi_detail', '${game.materi_id}')" class="absolute left-6 top-6 text-teal-100 hover:text-white transition">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        <h2 class="heading-font text-2xl tracking-wide">${game.judul_game}</h2>
+                        <div class="flex justify-center gap-6 mt-4 text-sm font-bold bg-teal-600 inline-flex px-4 py-2 rounded-full shadow-inner">
+                            <span>Soal: <span id="game-progress" class="text-yellow-300">1/${state.gameState.questions.length}</span></span>
+                            <span>Skor: <span id="game-score" class="text-yellow-300">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Game Stage -->
+                    <div id="game-stage" class="p-8 md:p-12 min-h-[300px] flex flex-col justify-center items-center bg-gray-50">
+                        <!-- Konten akan dirender oleh renderQuestion -->
+                    </div>
+                </div>
+            </div>
+        `;
+        ui.renderView(html);
+        this.renderQuestion();
+    },
+
+    renderQuestion() {
+        const gs = state.gameState;
+        if (gs.currentIndex >= gs.questions.length) {
+            return this.finishGame();
+        }
+
+        const q = gs.questions[gs.currentIndex];
+        const stage = document.getElementById('game-stage');
+        
+        // Update header progress
+        document.getElementById('game-progress').innerText = `${gs.currentIndex + 1}/${gs.questions.length}`;
+        document.getElementById('game-score').innerText = gs.score;
+
+        let optionsHtml = '';
+        const options = [
+            { key: 'A', text: q.pilihan_a }, { key: 'B', text: q.pilihan_b },
+            { key: 'C', text: q.pilihan_c }, { key: 'D', text: q.pilihan_d }
+        ];
+
+        options.forEach(opt => {
+            if(opt.text) {
+                optionsHtml += `
+                    <button id="opt-${opt.key}" onclick="app.answerQuestion('${opt.key}')" 
+                        class="option-btn w-full text-left p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-teal-400 hover:bg-teal-50 text-gray-700 font-medium text-lg flex items-center group">
+                        <span class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mr-4 font-bold group-hover:bg-teal-100 group-hover:text-teal-600">${opt.key}</span>
+                        ${opt.text}
+                    </button>
+                `;
+            }
+        });
+
+        stage.innerHTML = `
+            <div class="w-full fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                    <h3 class="text-xl md:text-2xl font-bold text-gray-800 text-center leading-snug">${q.pertanyaan}</h3>
+                </div>
+                <div class="space-y-4 w-full max-w-lg mx-auto">
+                    ${optionsHtml}
+                </div>
+                <!-- Pembahasan Container (hidden default) -->
+                <div id="feedback-container" class="mt-8 hidden flex-col items-center w-full max-w-lg mx-auto fade-in">
+                    <div id="feedback-badge" class="px-6 py-2 rounded-full font-bold text-white mb-3 text-lg"></div>
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 w-full text-center">
+                        <p class="text-sm font-bold text-blue-800 mb-1">Pembahasan:</p>
+                        <p id="feedback-text" class="text-blue-900"></p>
+                    </div>
+                    <button onclick="app.nextQuestion()" class="mt-6 bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-full shadow transition w-full">Lanjut <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        `;
+    },
+
+    answerQuestion(selectedKey) {
+        const gs = state.gameState;
+        const q = gs.questions[gs.currentIndex];
+        
+        // Disable all buttons
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.onclick = null;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.classList.remove('hover:border-teal-400', 'hover:bg-teal-50');
+        });
+
+        const isCorrect = selectedKey === q.jawaban_benar;
+        const selectedBtn = document.getElementById(`opt-${selectedKey}`);
+        const correctBtn = document.getElementById(`opt-${q.jawaban_benar}`);
+
+        if (isCorrect) {
+            selectedBtn.classList.add('correct-ans');
+            selectedBtn.classList.remove('opacity-70');
+            gs.correctCount++;
+            // Calculate score simple: 100 / total questions
+            const pointPerQ = 100 / gs.questions.length;
+            gs.score += Math.round(pointPerQ);
+        } else {
+            selectedBtn.classList.add('wrong-ans');
+            selectedBtn.classList.remove('opacity-70');
+            if(correctBtn) {
+                correctBtn.classList.add('correct-ans');
+                correctBtn.classList.remove('opacity-70');
+            }
+            gs.wrongCount++;
+        }
+
+        // Show feedback
+        const fbContainer = document.getElementById('feedback-container');
+        const fbBadge = document.getElementById('feedback-badge');
+        const fbText = document.getElementById('feedback-text');
+
+        fbBadge.innerText = isCorrect ? "BENAR! 🎉" : "SALAH 😅";
+        fbBadge.className = isCorrect ? "px-6 py-2 rounded-full font-bold text-white mb-3 text-lg bg-green-500" : "px-6 py-2 rounded-full font-bold text-white mb-3 text-lg bg-red-500";
+        fbText.innerText = q.pembahasan || `Jawaban yang tepat adalah ${q.jawaban_benar}.`;
+        
+        fbContainer.classList.remove('hidden');
+        fbContainer.classList.add('flex');
+    },
+
+    nextQuestion() {
+        state.gameState.currentIndex++;
+        this.renderQuestion();
+    },
+
+    async finishGame() {
+        const gs = state.gameState;
+        const game = state.activeGame;
+        gs.isFinished = true;
+
+        // Save result
+        const payload = {
+            user_id: state.currentUser.user_id,
+            nama_siswa: state.currentUser.nama,
+            materi_id: game.materi_id,
+            game_id: game.game_id,
+            skor: gs.score,
+            jumlah_benar: gs.correctCount,
+            jumlah_salah: gs.wrongCount,
+            waktu_pengerjaan: "-", // Sederhana
+            status_kelulusan: gs.score >= (game.batas_kelulusan || 60) ? "Lulus" : "Belum Lulus"
+        };
+
+        api.request('POST', 'saveResult', payload); // Fire and forget in UI
+
+        const isPassed = payload.status_kelulusan === "Lulus";
+        const icon = isPassed ? '<i class="fa-solid fa-trophy text-6xl text-yellow-400 mb-4 animate-bounce"></i>' : '<i class="fa-solid fa-face-smile-beam text-6xl text-teal-400 mb-4"></i>';
+        const msg = isPassed ? 'Luar Biasa! Kamu berhasil menyelesaikan misi!' : 'Tetap semangat! Pelajari materinya lagi dan coba kembali ya.';
+
+        const stage = document.getElementById('game-stage');
+        stage.innerHTML = `
+            <div class="text-center fade-in w-full max-w-md">
+                ${icon}
+                <h2 class="heading-font text-4xl text-gray-800 mb-2">Permainan Selesai!</h2>
+                <p class="text-gray-600 mb-8">${msg}</p>
+                
+                <div class="bg-white rounded-2xl shadow p-6 mb-8 border border-gray-100 flex justify-around">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Skor Akhir</p>
+                        <p class="text-4xl font-black ${isPassed ? 'text-green-500' : 'text-orange-500'}">${gs.score}</p>
+                    </div>
+                    <div class="text-center border-l border-r border-gray-100 px-4">
+                        <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Benar</p>
+                        <p class="text-2xl font-bold text-gray-700">${gs.correctCount}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Salah</p>
+                        <p class="text-2xl font-bold text-gray-700">${gs.wrongCount}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="app.initGame('${game.game_id}')" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-full shadow transition">Main Lagi <i class="fa-solid fa-rotate-right ml-2"></i></button>
+                    <button onclick="app.navigate('materi_detail', '${game.materi_id}')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-full transition">Kembali ke Materi</button>
+                </div>
+            </div>
+        `;
+    },
+
+    // Utility
+    shuffleArray(array) {
+        let curId = array.length;
+        while (0 !== curId) {
+            let randId = Math.floor(Math.random() * curId);
+            curId -= 1;
+            let tmp = array[curId];
+            array[curId] = array[randId];
+            array[randId] = tmp;
+        }
+        return array;
+    }
+};
+
+// Start App
+window.onload = () => {
+    app.init();
+};
+</script>
+</body>
+</html>
